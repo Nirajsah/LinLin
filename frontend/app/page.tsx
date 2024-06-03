@@ -7,10 +7,10 @@ import {
   split,
 } from '@apollo/client'
 import React from 'react'
-import Body from './components/Body'
 import { createClient } from 'graphql-ws'
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { getMainDefinition } from '@apollo/client/utilities'
+import App from './App'
 
 const link = new GraphQLWsLink(
   createClient({
@@ -40,9 +40,9 @@ const client = new ApolloClient({
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main className="w-full">
       <ApolloProvider client={client}>
-        <Body />
+        <App />
       </ApolloProvider>
     </main>
   )
