@@ -27,7 +27,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "app/GraphQLProvider.js",
-    "app/components/CountDownCard.jsx"
+    "app/components/CountDownCard.jsx",
+    "app/components/Web3Button.jsx"
   ],
   "exclude": ["node_modules"]
 }

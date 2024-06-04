@@ -11,6 +11,7 @@ import { createClient } from 'graphql-ws'
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { getMainDefinition } from '@apollo/client/utilities'
 import App from './App'
+import Navbar from './components/Navbar'
 
 const link = new GraphQLWsLink(
   createClient({
@@ -40,8 +41,9 @@ const client = new ApolloClient({
 
 export default function Home() {
   return (
-    <main className="w-full">
+    <main className="w-full relative">
       <ApolloProvider client={client}>
+        <Navbar />
         <App />
       </ApolloProvider>
     </main>
