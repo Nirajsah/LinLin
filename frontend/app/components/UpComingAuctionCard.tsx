@@ -1,12 +1,11 @@
 import Image from 'next/image'
 import React from 'react'
 import CountDownCard from './CountDownCard'
-import OnGoingStatus from './OnGoingStatus'
 
 export default function UpCommingAuctionCard() {
   return (
-    <div className="border border-[#3b3c3e] w-[350px] h-fit gap-5 flex flex-col rounded-2xl p-3 bg-[#232429]">
-      <div className="">
+    <div className="border border-transparent hover:border-[#3b3c3e] w-[350px] h-fit gap-5 flex flex-col rounded-2xl p-3 bg-[#232429]">
+      <div className="relative">
         <Image
           src="https://assets.website-files.com/6332f870900a6035e7bf20b1/63330006193f9068a8fff0e0_633184cbf1fedd0aab3a7c80_webp.webp"
           width={350}
@@ -15,6 +14,9 @@ export default function UpCommingAuctionCard() {
           alt="Auction card image"
           loading="lazy"
         />
+        <div className="absolute text-sm top-2 right-2 bg-orange-500 px-3 py-2 rounded-lg">
+          Upcoming
+        </div>
       </div>
       <div className="flex flex-col gap-5">
         <div className="text-3xl">Name of the NFT</div>

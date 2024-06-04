@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function Navbar() {
   return (
-    <div className="p-4 w-full fixed bg-transparent bg-opacity-85 backdrop-blur-md flex justify-center">
+    <div className="p-4 z-10 w-full fixed bg-transparent bg-opacity-85 backdrop-blur-md flex justify-center">
       <div className="w-full flex justify-between items-center max-w-[1280px]">
         <div className="text-4xl">Navbar</div>
         <div className="flex gap-5">

@@ -5,7 +5,7 @@ import OnGoingStatus from './OnGoingStatus'
 
 export default function AuctionCard() {
   return (
-    <div className="border border-[#3b3c3e] w-[400px] h-fit gap-5 flex flex-col rounded-2xl p-3 bg-[#232429]">
+    <div className="border border-transparent hover:border-[#3b3c3e] w-[400px] h-fit gap-5 flex flex-col rounded-2xl p-3 bg-[#232429]">
       <div className="">
         <Image
           src="https://assets.website-files.com/6332f870900a6035e7bf20b1/63330006193f9068a8fff0e0_633184cbf1fedd0aab3a7c80_webp.webp"
