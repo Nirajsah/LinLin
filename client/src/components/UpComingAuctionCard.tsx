@@ -1,7 +1,4 @@
-import {
-  convertMillisecondsToTimeObject,
-  convertMillisToDateTime,
-} from '../utils/time'
+import { convertMillisToDateTime } from '../utils/time'
 import { AuctionType } from './Body'
 import CountDownCard from './CountDownCard'
 
@@ -10,16 +7,12 @@ export default function UpCommingAuctionCard({
 }: {
   auction: AuctionType
 }) {
-  const { days, hours, minutes, seconds } = convertMillisecondsToTimeObject(
+  const { formattedDate, formattedTime } = convertMillisToDateTime(
     auction.startTime
   )
-  const { formattedDate } = convertMillisToDateTime(auction.startTime)
   const auctionState = {
     title: 'Auction Starting In',
-    days: days,
-    hours: hours,
-    minutes: minutes,
-    seconds: seconds,
+    timeLeftInMilliseconds: auction.startTime,
   }
   return (
     <div className="border border-transparent hover:border-[#3b3c3e] w-[350px] h-fit gap-5 flex flex-col rounded-2xl p-3 bg-[#232429]">
@@ -60,7 +53,10 @@ export default function UpCommingAuctionCard({
             <div className="text-[#b1b2b5] text-sm">Start Date</div>
             <div className="text-lg">{formattedDate}</div>
           </div>
-          <CountDownCard auctionState={auctionState} />
+          <CountDownCard
+            formattedTime={formattedTime}
+            auctionState={auctionState}
+          />
         </div>
       </div>
     </div>

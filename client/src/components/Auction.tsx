@@ -14,7 +14,7 @@ export default function Auction({ auction }: { auction: AuctionType }) {
   const [amount, setAmount] = React.useState('')
   const { formattedTime } = convertMillisToDateTime(auction.startTime)
   function handleBid() {
-    if (auction.currentBid >= amount) {
+    if (amount > auction.currentBid) {
       toast.error('Your bid must be higher than the current bid')
     } else {
       bidQuery({

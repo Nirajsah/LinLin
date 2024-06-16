@@ -60,7 +60,7 @@ export default function AuctionCard({ auction }: { auction: AuctionType }) {
             <div className="text-[#b1b2b5] text-start text-sm">Start Date</div>
             <div className="text-lg">June 10, 2024</div>
           </div>
-          <CountDownCard auctionState={auctionState} />
+          {/* <CountDownCard auctionState={auctionState} /> */}
         </div>
       </div>
     </div>

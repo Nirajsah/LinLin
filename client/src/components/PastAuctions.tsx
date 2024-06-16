@@ -4,14 +4,16 @@ import { AuctionType } from './Body'
 export default function PastAuction({ auction }: { auction: AuctionType }) {
   const { formattedDate } = convertMillisToDateTime(auction.endTime)
   return (
-    <div className="border border-transparent hover:border-[#3b3c3e] w-[300px] h-fit gap-5 flex flex-col rounded-2xl p-3 bg-[#232429]">
+    <div className="border border-transparent hover:border-[#3b3c3e] w-full h-full gap-5 flex flex-col rounded-2xl p-3 bg-[#232429]">
       <div className="relative w-full h-full max-w-[300px] max-h-[300px]">
-        <img
-          src={auction.item.image}
-          className="rounded-xl"
-          alt="Auction card image"
-          loading="lazy"
-        />
+        <div className="w-full h-full max-h-[100px] max-w-[280px]">
+          <img
+            src={auction.item.image}
+            className="object-cover w-full h-full rounded-xl"
+            alt="Auction card image"
+            loading="lazy"
+          />
+        </div>
         <div className="absolute text-sm top-1 right-1 bg-green-600 px-5 py-2 rounded-lg">
           Sold
         </div>

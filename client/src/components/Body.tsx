@@ -69,36 +69,48 @@ export default function Body() {
   React.useEffect(() => {
     function endAuctionUpdate() {
       console.log('active: ', activeAuctions)
-      activeAuctions.map((auction: AuctionType) => {
-        const currentTime = new Date().getTime()
-        if (auction.status === 'Ongoing') {
-          if (auction.endTime >= currentTime) {
+      const currentTime = new Date().getTime()
+
+      const remainingAuctions = activeAuctions.filter(
+        (auction: AuctionType) => {
+          if (auction.status === 'Ongoing' && auction.endTime > currentTime) {
             updateQuery({
               variables: {
                 endpoint: 'auction-main',
                 auctionId: auction.id,
               },
             })
+            return false // Remove auction from activeAuctions
           }
+          return true // Keep auction in activeAuctions
         }
-      })
+      )
+
+      setActiveAuctions(remainingAuctions)
+      setUpdate(!update)
     }
 
     function startAuctionUpdate() {
-      console.log('upcomming: ', upComingAuctions)
-      upComingAuctions.map((auction: AuctionType) => {
-        const currentTime = new Date().getTime()
-        if (auction.startTime <= currentTime) {
-          if (auction.status === 'Created') {
+      console.log('upcoming: ', upComingAuctions)
+      const currentTime = new Date().getTime()
+
+      const remainingAuctions = upComingAuctions.filter(
+        (auction: AuctionType) => {
+          if (auction.status === 'Created' && auction.startTime < currentTime) {
             updateQuery({
               variables: {
                 endpoint: 'auction-main',
                 auctionId: auction.id,
               },
             })
+            return false // Remove auction from upComingAuctions
           }
+          return true // Keep auction in upComingAuctions
         }
-      })
+      )
+
+      setUpComingAuctions(remainingAuctions)
+      setUpdate(!update)
     }
 
     if (chainId === mainChainId) {
@@ -108,7 +120,7 @@ export default function Body() {
         endAuctionUpdate()
         setUpdate(!update)
         auctionQuery()
-      }, 30000)
+      }, 10000)
 
       return () => clearInterval(interval)
     }

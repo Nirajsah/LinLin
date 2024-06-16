@@ -1,33 +1,29 @@
 import React from 'react'
 
 const ProgressBar = ({ duration }: any) => {
-  const [timeLeft, setTimeLeft] = React.useState(
-    convertDurationToMilliseconds(duration)
-  )
-  const [progress, setProgress] = React.useState(0)
+  const [timeLeft, setTimeLeft] = React.useState(duration)
+  const [progress, setProgress] = React.useState(100)
 
   React.useEffect(() => {
-    const endTime = new Date().getTime() + timeLeft // Add the duration to the current time in milliseconds
     const timer = setInterval(() => {
-      const currentTime = new Date().getTime()
-      const remainingTime = endTime - currentTime
-
-      if (remainingTime <= 0) {
-        clearInterval(timer)
-        setTimeLeft(0)
-      } else {
-        setTimeLeft(remainingTime)
-      }
+      setTimeLeft((prevTime: any) => {
+        const newTime = prevTime - 1000
+        if (newTime <= 0) {
+          clearInterval(timer)
+          return 0
+        }
+        return newTime
+      })
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [timeLeft])
+  }, [])
 
   React.useEffect(() => {
-    const totalMilliseconds = timeLeft
-    const progressIncrement = 100 / totalMilliseconds
-    setProgress(100 - timeLeft * progressIncrement)
-  }, [timeLeft])
+    const totalMilliseconds = duration
+    const progressDecrement = 100 / totalMilliseconds
+    setProgress((prevProgress) => prevProgress - progressDecrement * 1000)
+  }, [timeLeft, duration])
 
   const formatTime = (milliseconds: any) => {
     const totalSeconds = Math.floor(milliseconds / 1000)
@@ -53,12 +49,6 @@ const ProgressBar = ({ duration }: any) => {
       </div>
     </div>
   )
-}
-
-const convertDurationToMilliseconds = (duration: string) => {
-  const [hours, minutes, seconds] = duration.split(':').map(Number)
-  const totalSeconds = hours * 3600 + minutes * 60 + seconds
-  return totalSeconds * 1000
 }
 
 export default ProgressBar
