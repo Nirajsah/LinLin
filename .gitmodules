@@ -1,3 +1,3 @@
 [submodule "auction"]
   path = auction
-  url = git@github.com:Nirajsah/auction.git
+  url = "git@github.com:Nirajsah/auction.git"
