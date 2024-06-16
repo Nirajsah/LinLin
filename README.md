@@ -137,5 +137,3 @@ bun build // for production(optional)
 bun preview
 
 ```
-
-This README provides a detailed overview of your project, instructions for getting started, usage examples, and other relevant information to help users and developers understand and use your market service. &#8203;:citation[oaicite:0]{index=0}&#8203;
