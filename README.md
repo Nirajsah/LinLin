@@ -5,8 +5,17 @@ LinLin is an auction system built on the Linera blockchain. It is a decentralize
 ## Auction Workflow
 
 ![image](./assets/Auction%20Workflow.png)
+
+### Bid Operation
+
 ![image](./assets/BidOperation.png)
+
+### Auction Host Operation
+
 ![image](./assets/HostOperation.png)
+
+### Auction Update Status Operation
+
 ![image](./assets/UpdateOperation.png)
 
 ## Auction
