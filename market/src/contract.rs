@@ -78,7 +78,6 @@ impl Contract for MarketContract {
             .runtime
             .message_id()
             .expect("Message ID has to be available when executing a message");
-
         match message {
             Message::Subscribe => {
                 self.runtime
@@ -122,18 +121,6 @@ impl MarketContract {
             .await
             .expect("update failed");
 
-        if self.runtime.chain_id() != self.runtime.application_id().creation.chain_id {
-            log::info!("Sending ownership update to creation chain");
-            self.runtime
-                .prepare_message(Message::UpdateOwnerShip {
-                    item_owner,
-                    id,
-                    new_owner,
-                })
-                .with_tracking()
-                .with_authentication()
-                .send_to(self.runtime.application_id().creation.chain_id);
-        }
         let dest = Destination::Subscribers(ChannelName::from(MARKET.to_vec()));
         self.runtime
             .prepare_message(Message::UpdateOwnerShip {

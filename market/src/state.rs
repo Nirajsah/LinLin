@@ -39,6 +39,11 @@ impl Market {
         let owner_item = self.items.get(&owner).await.unwrap();
         match owner_item {
             Some(mut items) => {
+                for i in 0..items.len() {
+                    if items[i].id == id {
+                        return items[i].clone();
+                    }
+                }
                 items.push(item.clone());
                 log::info!("Item added to existing owner {:?}", items);
                 self.items.insert(&owner, items).unwrap();
@@ -67,76 +72,20 @@ impl Market {
         id: u32,
         new_owner: Account,
     ) -> Result<MarketResponse, MarketError> {
-        // let mut owner_items = match self.items.get_mut(&owner) {
-        //     Some(items) => items,
-        //     None => return Err(MarketError::ItemNotFound),
-        // };
-        //
-        // let item_index = owner_items
-        //     .iter()
-        //     .position(|item| item.id == id)
-        //     .ok_or(MarketError::ItemNotFound)?;
-        //
-        // let mut item_to_transfer = owner_items.remove(item_index);
-        // item_to_transfer.owner = new_owner;
-        //
-        // let new_owner_items = self.items.entry(new_owner).or_insert_with(Vec::new);
-        // new_owner_items.push(item_to_transfer);
-        //
-        // Ok(MarketResponse::Ok)
         let mut owner_items = match self.items.get(&owner).await? {
-            Some(items) => items.clone(), // Clone the vector instead of taking a reference
+            Some(item) => item,
             None => return Err(MarketError::ItemNotFound),
         };
 
-        let mut new_owner_items = Vec::new(); // Create a new vector for the new owner
-
-        for item in owner_items.iter_mut() {
-            if item.id == id {
-                item.owner = new_owner.clone(); // Update the owner of the existing item
-            } else {
-                new_owner_items.push(item.clone()); // Move the item to the new owner's vector
+        for i in 0..owner_items.len() {
+            if owner_items[i].id == id {
+                owner_items[i].owner = new_owner;
             }
         }
 
-        // Remove the old owner's items
-        let _ = self.items.remove(&owner);
-
-        // Insert the new owner's items if they exist
-        if let Some(new_owner) = &new_owner.owner {
-            let _ = self.items.insert(new_owner, new_owner_items);
-        }
-
-        // let mut owner_items = match self.items.get(&owner).await? {
-        //     Some(item) => item,
-        //     None => return Err(MarketError::ItemNotFound),
-        // };
-        //
-        // for i in 0..owner_items.len() {
-        //     if owner_items[i].id == id {
-        //         owner_items.remove(i); // Remove the item at index i
-        //         let mut new_item = owner_items[i].clone(); // Create a new item by cloning the existing one
-        //         new_item.owner = new_owner; // Update the owner of the new item
-        //         owner_items.insert(i, new_item); // Insert the new item back into the vector
-        //         break; // Exit the loop after making the change
-        //     }
-        // }
-        // match new_owner.owner {
-        //     Some(owner) => {
-        //         let _ = self.items.insert(&owner, owner_items);
-        //     }
-        //     None => {
-        //         return Err(MarketError::ItemNotFound);
-        //     }
-        // };
-        // self.items.insert(&new_owner, item).unwrap();
-        // for i in 0..item.len() {
-        //     if item[i].id == id {
-        //         item[i].owner = item[i].owner = new_owner;
-        //         self.items.insert(&new_owner.owner.unwrap(), item).unwrap();
-        //         return Ok(MarketResponse::Ok);
-        //     }
-        // }
+        self.items
+            .insert(&new_owner.owner.unwrap(), owner_items)
+            .unwrap();
         Ok(MarketResponse::Ok)
     }
 }
