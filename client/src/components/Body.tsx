@@ -39,7 +39,6 @@ export default function Body() {
   const [selectedAuction, setSelectedAuction] =
     React.useState<AuctionType | null>(null)
 
-  const [update, setUpdate] = React.useState(false)
   const [activeAuctions, setActiveAuctions] = React.useState<AuctionType[]>([])
   const [upComingAuctions, setUpComingAuctions] = React.useState<AuctionType[]>(
     []
@@ -60,53 +59,58 @@ export default function Body() {
       },
     })
 
-  if (!auctionCalled) {
-    setTimeout(() => {
+  React.useEffect(() => {
+    if (!auctionCalled) {
       auctionQuery()
-    }, 1000)
-  }
+    }
+  }, [auctionCalled, auctionQuery])
 
   React.useEffect(() => {
-    function endAuctionUpdate() {
-      const currentTime = new Date().getTime()
+    const currentTime = Date.now()
 
-      activeAuctions.forEach((auction: AuctionType) => {
-        if (auction.status === 'Ongoing' && auction.endTime > currentTime) {
+    function endAuction() {
+      activeAuctions.forEach((auction) => {
+        let aucitonId = auction.id
+        if (auction.status === 'Ongoing' && auction.endTime <= currentTime) {
           updateQuery({
             variables: {
               endpoint: 'auction-main',
               auctionId: auction.id,
             },
           })
-          window.location.reload()
+          const updatedAuctions = activeAuctions.filter((auction) => {
+            auction.id !== aucitonId
+          })
+          setActiveAuctions(updatedAuctions)
         }
       })
     }
 
-    function startAuctionUpdate() {
-      console.log('upcoming: ', upComingAuctions)
-      const currentTime = new Date().getTime()
-
-      upComingAuctions.forEach((auction: AuctionType) => {
-        if (auction.status === 'Created' && auction.startTime < currentTime) {
+    function startAuction() {
+      upComingAuctions.forEach((auction) => {
+        if (auction.status === 'Created' && auction.startTime <= currentTime) {
+          let aucitonId = auction.id
           updateQuery({
             variables: {
               endpoint: 'auction-main',
               auctionId: auction.id,
             },
           })
-          window.location.reload()
+          const updatedAuctions = upComingAuctions.filter((auction) => {
+            auction.id !== aucitonId
+          })
+          setUpComingAuctions(updatedAuctions)
         }
       })
     }
 
     if (chainId === mainChainId) {
       const interval = setInterval(() => {
-        startAuctionUpdate()
-        endAuctionUpdate()
-        setUpdate(!update)
-        auctionQuery()
+        startAuction()
+        endAuction()
       }, 20000)
+
+      auctionQuery()
 
       return () => clearInterval(interval)
     }
@@ -133,7 +137,7 @@ export default function Body() {
       setUpComingAuctions(upComingAuctionsData)
       setPastAuctions(pastAuctionsData)
     }
-  }, [auctionData, update])
+  }, [auctionData])
 
   const handleCloseModal = () => {
     setSelectedAuction(null)
@@ -149,6 +153,7 @@ export default function Body() {
       )}
       <div className="gap-3 mt-10 flex flex-col items-center max-w-[1280px]">
         <div className="flex flex-col items-center">
+          <div className="text-4xl mb-10">Past Auctions</div>
           <div className="gap-5 grid grid-cols-3">
             {pastAuctions?.map((auction: AuctionType, index) => (
               <div key={index}>
