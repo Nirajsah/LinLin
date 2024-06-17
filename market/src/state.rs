@@ -84,6 +84,12 @@ impl Market {
                 item.owner = new_owner.clone();
                 match self.items.get(&new_owner.owner.unwrap()).await? {
                     Some(mut items) => {
+                        for i in 0..items.len() {
+                            if items[i].id == id {
+                                return Err(MarketError::ItemAlreadyExists);
+                            }
+                        }
+
                         items.push(item.clone());
                         self.items.insert(&new_owner.owner.unwrap(), items).unwrap();
                     }
@@ -93,9 +99,10 @@ impl Market {
                             .insert(&new_owner.owner.unwrap(), store.clone())
                             .unwrap();
                     }
-                }
+                };
             }
         }
+        self.items.insert(&owner, owner_items).unwrap();
 
         Ok(MarketResponse::Ok)
     }
