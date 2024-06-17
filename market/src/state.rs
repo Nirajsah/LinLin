@@ -72,6 +72,7 @@ impl Market {
         id: u32,
         new_owner: Account,
     ) -> Result<MarketResponse, MarketError> {
+        let mut store: Vec<Item> = Vec::new();
         let mut owner_items = match self.items.get(&owner).await? {
             Some(item) => item,
             None => return Err(MarketError::ItemNotFound),
@@ -79,13 +80,23 @@ impl Market {
 
         for i in 0..owner_items.len() {
             if owner_items[i].id == id {
-                owner_items[i].owner = new_owner;
+                let mut item = owner_items.remove(i);
+                item.owner = new_owner.clone();
+                match self.items.get(&new_owner.owner.unwrap()).await? {
+                    Some(mut items) => {
+                        items.push(item.clone());
+                        self.items.insert(&new_owner.owner.unwrap(), items).unwrap();
+                    }
+                    None => {
+                        store.push(item.clone());
+                        self.items
+                            .insert(&new_owner.owner.unwrap(), store.clone())
+                            .unwrap();
+                    }
+                }
             }
         }
 
-        self.items
-            .insert(&new_owner.owner.unwrap(), owner_items)
-            .unwrap();
         Ok(MarketResponse::Ok)
     }
 }
