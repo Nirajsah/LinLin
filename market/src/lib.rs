@@ -78,6 +78,9 @@ pub enum MarketError {
     #[error("Item does not exist")]
     ItemNotFound,
 
+    #[error("Item already exists for the owner")]
+    ItemAlreadyExists,
+
     #[error(transparent)]
     ViewError(#[from] ViewError),
 
