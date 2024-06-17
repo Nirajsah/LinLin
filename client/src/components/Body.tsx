@@ -68,59 +68,45 @@ export default function Body() {
 
   React.useEffect(() => {
     function endAuctionUpdate() {
-      console.log('active: ', activeAuctions)
       const currentTime = new Date().getTime()
 
-      const remainingAuctions = activeAuctions.filter(
-        (auction: AuctionType) => {
-          if (auction.status === 'Ongoing' && auction.endTime > currentTime) {
-            updateQuery({
-              variables: {
-                endpoint: 'auction-main',
-                auctionId: auction.id,
-              },
-            })
-            return false // Remove auction from activeAuctions
-          }
-          return true // Keep auction in activeAuctions
+      activeAuctions.forEach((auction: AuctionType) => {
+        if (auction.status === 'Ongoing' && auction.endTime > currentTime) {
+          updateQuery({
+            variables: {
+              endpoint: 'auction-main',
+              auctionId: auction.id,
+            },
+          })
+          window.location.reload()
         }
-      )
-
-      setActiveAuctions(remainingAuctions)
-      setUpdate(!update)
+      })
     }
 
     function startAuctionUpdate() {
       console.log('upcoming: ', upComingAuctions)
       const currentTime = new Date().getTime()
 
-      const remainingAuctions = upComingAuctions.filter(
-        (auction: AuctionType) => {
-          if (auction.status === 'Created' && auction.startTime < currentTime) {
-            updateQuery({
-              variables: {
-                endpoint: 'auction-main',
-                auctionId: auction.id,
-              },
-            })
-            return false // Remove auction from upComingAuctions
-          }
-          return true // Keep auction in upComingAuctions
+      upComingAuctions.forEach((auction: AuctionType) => {
+        if (auction.status === 'Created' && auction.startTime < currentTime) {
+          updateQuery({
+            variables: {
+              endpoint: 'auction-main',
+              auctionId: auction.id,
+            },
+          })
+          window.location.reload()
         }
-      )
-
-      setUpComingAuctions(remainingAuctions)
-      setUpdate(!update)
+      })
     }
 
     if (chainId === mainChainId) {
       const interval = setInterval(() => {
-        console.log('calling...', new Date().getSeconds())
         startAuctionUpdate()
         endAuctionUpdate()
         setUpdate(!update)
         auctionQuery()
-      }, 10000)
+      }, 20000)
 
       return () => clearInterval(interval)
     }
