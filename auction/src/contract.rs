@@ -202,14 +202,6 @@ impl AuctionContract {
                         }
                         None => return,
                     };
-                    // if auction.winner.unwrap() != *account {
-                    //     self.fund_transfer(*account, *amount).await;
-                    // }
-                    // self.fund_transfer(
-                    //     auction.winner.expect("Winner Not found"),
-                    //     auction.current_bid,
-                    // )
-                    // .await
                 }
                 log::info!("Finalising Auction: {:?}", auction);
             }
@@ -226,16 +218,6 @@ impl AuctionContract {
         };
         self.runtime.call_application(true, lincoin_id, &call);
     }
-
-    // pub async fn reward_user(&mut self, account: &Account) {
-    //     let lincoin_id = self.lincoin_id();
-    //     let reward_amount = Amount::from_str("30.").unwrap();
-    //     let call = lincoin::Operation::FundTransfer {
-    //         target_account: *account,
-    //         amount: reward_amount,
-    //     };
-    //     self.runtime.call_application(true, lincoin_id, &call);
-    // }
 
     pub async fn transfer_assest(&mut self, auction: OAuction) {
         let market_id = self.market_id();
@@ -256,14 +238,6 @@ impl AuctionContract {
             }
             None => (),
         }
-        // let winner = auction.winner.unwrap();
-        //
-        // let call = market::Operation::UpdateOwnerShip {
-        //     id: auction.item.item_id,
-        //     new_owner: winner,
-        // };
-        //
-        // self.runtime.call_application(true, market_id, &call);
     }
 
     pub async fn on_op_auction_update(&mut self, auction_id: u32) {
