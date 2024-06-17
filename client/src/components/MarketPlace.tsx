@@ -141,6 +141,7 @@ function Form({ handleFormClose }: { handleFormClose: () => void }) {
           <button
             onClick={(e) => {
               e.preventDefault()
+              handleFormClose()
               handleQuery()
             }}
             className="text-black text-sm w-fit bg-button-color grid place-content-center rounded-md px-3 py-2"
@@ -217,7 +218,7 @@ export default function MarketPlace() {
         <div className="py-10 gap-3 flex flex-wrap w-full">
           {data &&
             data.map((item: any, index: any) => (
-              <div className="gap-2 flex" key={index}>
+              <div className="gap-4 grid grid-cols-4" key={index}>
                 {item.value.map((val: any, index: any) => (
                   <div key={index}>
                     <Card item={val} />
