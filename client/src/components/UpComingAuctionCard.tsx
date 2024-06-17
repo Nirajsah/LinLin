@@ -7,13 +7,8 @@ export default function UpCommingAuctionCard({
 }: {
   auction: AuctionType
 }) {
-  const { formattedDate, formattedTime } = convertMillisToDateTime(
-    auction.startTime
-  )
-  const auctionState = {
-    title: 'Auction Starting In',
-    timeLeftInMilliseconds: auction.startTime,
-  }
+  const { formattedDate } = convertMillisToDateTime(auction.startTime)
+  const title = 'Auction Starting In'
   return (
     <div className="border border-transparent hover:border-[#3b3c3e] w-[350px] h-fit gap-5 flex flex-col rounded-2xl p-3 bg-[#232429]">
       <div className="relative">
@@ -54,8 +49,8 @@ export default function UpCommingAuctionCard({
             <div className="text-lg">{formattedDate}</div>
           </div>
           <CountDownCard
-            formattedTime={formattedTime}
-            auctionState={auctionState}
+            title={title}
+            auctionTimeInMilliseconds={auction.startTime}
           />
         </div>
       </div>

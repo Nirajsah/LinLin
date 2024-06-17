@@ -14,6 +14,7 @@ export default function Auction({ auction }: { auction: AuctionType }) {
   const [amount, setAmount] = React.useState('')
   const { formattedTime } = convertMillisToDateTime(auction.startTime)
   function handleBid() {
+    console.log(amount)
     if (amount > auction.currentBid) {
       toast.error('Your bid must be higher than the current bid')
     } else {
@@ -57,18 +58,18 @@ export default function Auction({ auction }: { auction: AuctionType }) {
             that holds value and authenticity on the blockchain. Own this NFT
             and become a part of the digital art revolution!
           </span>
-          <span className="flex gap-2 items-center mt-3">
+          <span className="flex flex-col gap-1 mt-3">
             Higest Bidder:
-            <p>
+            <div className="break-words whitespace-normal">
               {auction.currentHighestBidder
                 ? auction.currentHighestBidder.owner
                 : 'None'}
-            </p>
+            </div>
           </span>
           <span className="flex gap-2 break-words whitespace-normal items-center mt-3">
             Current Higest Bid: <p>{auction.currentBid}</p>
           </span>
-          <ProgressBar duration={formattedTime} />
+          <ProgressBar duration={auction.endTime} />
         </div>
         <div className="w-fit self-end flex gap-5">
           {inputField && (

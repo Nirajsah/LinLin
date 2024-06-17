@@ -45,9 +45,9 @@ export default function AuctionCard({ auction }: { auction: AuctionType }) {
               OnGoing
             </div>
           </div>
-          <div className="text-start">
+          <div className="text-start w-[350px]">
             <div className="text-[#b1b2b5] text-sm">Highest Bidder</div>
-            <div className="break-normal">
+            <div className="whitespace-normal break-words text-[#b1b2b5]">
               {auction.currentHighestBidder &&
               auction.currentHighestBidder.owner
                 ? auction.currentHighestBidder.owner

@@ -1,12 +1,12 @@
-import React from 'react'
+import { useEffect, useState } from 'react'
 
-const ProgressBar = ({ duration }: any) => {
-  const [timeLeft, setTimeLeft] = React.useState(duration)
-  const [progress, setProgress] = React.useState(100)
+const ProgressBar = ({ duration }: { duration: number }) => {
+  const [timeLeft, setTimeLeft] = useState(duration - Date.now())
+  const [progress, setProgress] = useState(100)
 
-  React.useEffect(() => {
+  useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft((prevTime: any) => {
+      setTimeLeft((prevTime) => {
         const newTime = prevTime - 1000
         if (newTime <= 0) {
           clearInterval(timer)
@@ -19,13 +19,24 @@ const ProgressBar = ({ duration }: any) => {
     return () => clearInterval(timer)
   }, [])
 
-  React.useEffect(() => {
-    const totalMilliseconds = duration
+  useEffect(() => {
+    const totalMilliseconds = duration - Date.now()
     const progressDecrement = 100 / totalMilliseconds
-    setProgress((prevProgress) => prevProgress - progressDecrement * 1000)
-  }, [timeLeft, duration])
+    const timer = setInterval(() => {
+      setProgress((prevProgress) => {
+        const newProgress = prevProgress - progressDecrement * 1000
+        if (newProgress <= 0) {
+          clearInterval(timer)
+          return 0
+        }
+        return newProgress
+      })
+    }, 1000)
 
-  const formatTime = (milliseconds: any) => {
+    return () => clearInterval(timer)
+  }, [duration])
+
+  const formatTime = (milliseconds: number) => {
     const totalSeconds = Math.floor(milliseconds / 1000)
     const hours = Math.floor(totalSeconds / 3600)
     const mins = Math.floor((totalSeconds % 3600) / 60)
