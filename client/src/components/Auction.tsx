@@ -4,7 +4,6 @@ import { USER_BID } from '../GraphQL/queries'
 import { AuctionType } from './Body'
 import ProgressBar from './ProgressBar'
 import { toast } from 'sonner'
-import { convertMillisToDateTime } from '../utils/time'
 
 export default function Auction({ auction }: { auction: AuctionType }) {
   const chainId = window.sessionStorage.getItem('chainId')
@@ -12,10 +11,9 @@ export default function Auction({ auction }: { auction: AuctionType }) {
   const [inputField, setInputField] = useState(false)
   let [bidQuery] = useMutation(USER_BID)
   const [amount, setAmount] = React.useState('')
-  const { formattedTime } = convertMillisToDateTime(auction.startTime)
   function handleBid() {
     console.log(amount)
-    if (amount > auction.currentBid) {
+    if (amount < auction.currentBid) {
       toast.error('Your bid must be higher than the current bid')
     } else {
       bidQuery({
