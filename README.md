@@ -122,16 +122,16 @@ linera --with-wallet 0 service --port 8080
 linera --with-wallet 1 service --port 8081
 ```
 
-### make sure `LINCOIN_ID`, `AUCTION_ID`, `MARKET_ID` are passed inside the `client/src/constants/const`
+### `LINCOIN_ID`, `AUCTION_ID`, `MARKET_ID` are passed inside the `client/src/constants/const`. if facing any issue please check the client/src/constants/const file.
 
-### Installation && Deploying Clinet
+### Installation && Deploying Client
 
-Install bunjs,
+Install Bun.js, `https://bun.sh/`
 
 ```
 cd client
 bun install
-bun dev
+bun dev or bun vite
 
 bun build // for production(optional)
 bun preview
