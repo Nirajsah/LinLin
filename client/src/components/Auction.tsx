@@ -12,8 +12,7 @@ export default function Auction({ auction }: { auction: AuctionType }) {
   let [bidQuery] = useMutation(USER_BID)
   const [amount, setAmount] = React.useState('')
   function handleBid() {
-    console.log(amount)
-    if (amount < auction.currentBid) {
+    if (parseInt(auction.currentBid, 10) > parseInt(amount, 10)) {
       toast.error('Your bid must be higher than the current bid')
     } else {
       bidQuery({
@@ -28,6 +27,7 @@ export default function Auction({ auction }: { auction: AuctionType }) {
           chainId: chainId,
         },
       })
+      toast.success('Bid Accepted')
     }
   }
 
