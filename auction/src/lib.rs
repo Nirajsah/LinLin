@@ -53,7 +53,6 @@ pub enum Operation {
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub enum Message {
-    Ok,
     Auction {
         auction: OAuction,
     },

@@ -66,7 +66,11 @@ impl Contract for AuctionContract {
             } => {
                 log::info!("Bidder: {:?}", bidder);
                 if self.runtime.chain_id() == bidder.chain_id {
-                    self.on_op_bid(bidder, auction_id, amount).await;
+                    if self.runtime.chain_id() == self.runtime.application_id().creation.chain_id {
+                        self.on_bid_main(bidder, auction_id, amount).await;
+                    } else {
+                        self.on_op_bid(bidder, auction_id, amount).await;
+                    }
                 }
                 AuctionResponse::Ok
             }
@@ -154,13 +158,15 @@ impl Contract for AuctionContract {
                 amount,
             } => {
                 log::info!("Bid received: {:?}", amount);
-
-                self.state
-                    .update_bid(auction_id, amount, bidder)
-                    .await
-                    .expect("Failed to update bid");
+                if self.runtime.chain_id() == self.runtime.application_id().creation.chain_id {
+                    self.on_msg_bid(bidder, auction_id, amount).await;
+                } else {
+                    self.state
+                        .update_bid(auction_id, amount, bidder)
+                        .await
+                        .expect("Failed to update bid");
+                }
             }
-            _ => {}
         }
     }
 
@@ -248,42 +254,42 @@ impl AuctionContract {
         let dest = Destination::Subscribers(ChannelName::from(AUCTION.to_vec()));
         self.runtime
             .prepare_message(Message::UpdateStatus { auction_id })
-            .with_tracking()
             .with_authentication()
             .send_to(dest);
 
         self.finalise_auction(auction_id).await;
     }
 
-    pub async fn on_op_bid(&mut self, bidder: Account, auction_id: u32, bid: Amount) {
+    pub async fn on_msg_bid(&mut self, bidder: Account, auction_id: u32, bid: Amount) {
         let user = match bidder.owner {
             Some(owner) => AccountOwner::User(owner),
             _ => return,
         }; // Operation Transfer requires type AccountOwner instead of Account
-        if self.runtime.chain_id() != self.runtime.application_id().creation.chain_id {
-            let dest_chain_id = self.runtime.application_id().creation.chain_id;
-            self.runtime
-                .prepare_message(Message::UpdateBid {
-                    auction_id,
-                    bidder,
-                    amount: bid,
-                })
-                .with_tracking()
-                .with_authentication()
-                .send_to(dest_chain_id);
-        }
+
         self.state
             .update_bid(auction_id, bid, bidder)
             .await
             .expect("Failed to update bid");
 
+        self.state.bidder(auction_id, bidder.clone(), bid).await;
         let call = lincoin::Operation::Transfer {
             source: user,
             amount: bid,
         };
-        self.state.bidder(auction_id, bidder.clone(), bid).await;
         let lincoin_id = self.lincoin_id();
         self.runtime.call_application(true, lincoin_id, &call);
+    }
+
+    pub async fn on_bid_main(&mut self, bidder: Account, auction_id: u32, bid: Amount) {
+        let user = match bidder.owner {
+            Some(owner) => AccountOwner::User(owner),
+            _ => return,
+        }; // Operation Transfer requires type AccountOwner instead of Account
+
+        self.state
+            .update_bid(auction_id, bid, bidder)
+            .await
+            .expect("Failed to update bid");
 
         let dest = Destination::Subscribers(ChannelName::from(AUCTION.to_vec()));
         self.runtime
@@ -292,21 +298,56 @@ impl AuctionContract {
                 amount: bid,
                 bidder,
             })
-            .with_tracking()
             .with_authentication()
             .send_to(dest);
+
+        self.state.bidder(auction_id, bidder, bid).await;
+        let call = lincoin::Operation::Transfer {
+            source: user,
+            amount: bid,
+        };
+
+        let lincoin_id = self.lincoin_id();
+        self.runtime.call_application(true, lincoin_id, &call);
+    }
+
+    pub async fn on_op_bid(&mut self, bidder: Account, auction_id: u32, bid: Amount) {
+        self.state
+            .update_bid(auction_id, bid, bidder)
+            .await
+            .expect("Failed to update bid");
+
+        let dest = Destination::Subscribers(ChannelName::from(AUCTION.to_vec()));
+        self.runtime
+            .prepare_message(Message::UpdateBid {
+                auction_id,
+                amount: bid,
+                bidder,
+            })
+            .with_authentication()
+            .send_to(dest);
+
+        let dest_chain_id = self.runtime.application_id().creation.chain_id;
+        self.runtime
+            .prepare_message(Message::UpdateBid {
+                auction_id,
+                bidder,
+                amount: bid,
+            })
+            .with_authentication()
+            .send_to(dest_chain_id);
     }
 
     pub async fn on_op_subscribe(&mut self) -> Result<AuctionResponse, AuctionError> {
         let market_id = self.market_id();
         self.runtime
-            .prepare_message(Message::Subscribe)
+            .prepare_message(Message::Subscribe) // subscribing to current application
             .with_authentication()
             .send_to(self.runtime.application_id().creation.chain_id);
 
         log::info!("calling from {:?}", self.runtime.chain_id());
         let call = market::Operation::Subscribe;
-        self.runtime.call_application(true, market_id, &call);
+        self.runtime.call_application(true, market_id, &call); // subscribing to different application
 
         Ok(AuctionResponse::Ok)
     }
@@ -338,22 +379,22 @@ impl AuctionContract {
             self.runtime.application_id().creation.chain_id
         );
 
-        if self.runtime.chain_id() != self.runtime.application_id().creation.chain_id {
-            let dest_chain_id = self.runtime.application_id().creation.chain_id;
-            self.runtime
-                .prepare_message(Message::Auction {
-                    auction: auction.clone(),
-                })
-                .with_tracking()
-                .with_authentication()
-                .send_to(dest_chain_id);
-
-            log::info!(
-                "Sending Auction: {:?} to chaind: {:?}",
-                auction,
-                dest_chain_id
-            );
-        }
+        // if self.runtime.chain_id() != self.runtime.application_id().creation.chain_id {
+        //     let dest_chain_id = self.runtime.application_id().creation.chain_id;
+        //     self.runtime
+        //         .prepare_message(Message::Auction {
+        //             auction: auction.clone(),
+        //         })
+        //         .with_tracking()
+        //         .with_authentication()
+        //         .send_to(dest_chain_id);
+        //
+        //     log::info!(
+        //         "Sending Auction: {:?} to chaind: {:?}",
+        //         auction,
+        //         dest_chain_id
+        //     );
+        // }
 
         let dest = Destination::Subscribers(ChannelName::from(AUCTION.to_vec()));
 
@@ -362,7 +403,6 @@ impl AuctionContract {
             .prepare_message(Message::Auction {
                 auction: auction.clone(),
             })
-            .with_tracking()
             .with_authentication()
             .send_to(dest);
 
