@@ -108,7 +108,7 @@ export default function Body() {
       const interval = setInterval(() => {
         startAuction()
         endAuction()
-      }, 20000)
+      }, 1000)
 
       auctionQuery()
 
@@ -152,16 +152,18 @@ export default function Body() {
         </div>
       )}
       <div className="gap-3 mt-10 flex flex-col items-center max-w-[1280px]">
-        <div className="flex flex-col items-center">
-          <div className="text-4xl mb-10">Past Auctions</div>
-          <div className="gap-5 grid grid-cols-3">
-            {pastAuctions?.map((auction: AuctionType, index) => (
-              <div key={index}>
-                <PastAuction auction={auction} />
-              </div>
-            ))}
+        {pastAuctions.length > 0 && (
+          <div className="flex flex-col items-center">
+            <div className="text-4xl mb-10">Past Auctions</div>
+            <div className="gap-5 grid grid-cols-3">
+              {pastAuctions?.map((auction: AuctionType, index) => (
+                <div key={index}>
+                  <PastAuction auction={auction} />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
         {activeAuctions.length > 0 && (
           <div className="flex flex-col mt-10 items-center">
             <div className="text-4xl mb-10">OnGoing Auctions</div>
