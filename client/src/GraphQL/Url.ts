@@ -15,7 +15,7 @@ export const createApolloClient = () => {
   const chain_id = window.sessionStorage.getItem('chainId') ?? ''
   const wsLink = new GraphQLWsLink(
     createClient({
-      url: 'ws://' + host + ':' + port + '/ws',
+      url: `ws://${host}:${port}/ws`,
     })
   )
   const httpLink = createHttpLink({
