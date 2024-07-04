@@ -1,6 +1,11 @@
 import React from 'react'
 import Modal from '../components/Modal'
-import { useLazyQuery, useMutation } from '@apollo/client'
+import {
+  useLazyQuery,
+  useMutation,
+  useQuery,
+  useSubscription,
+} from '@apollo/client'
 import { gql } from 'graphql-tag'
 import { GET_MARKETPLACE } from '../GraphQL/queries'
 import { useUser } from '../context/UserProvider'
@@ -189,28 +194,30 @@ export default function MarketPlace() {
   function handleFormClose() {
     setShowForm(false)
   }
-  let [getMarketQuery, { data: marketData, called }] = useLazyQuery(
-    GET_MARKETPLACE,
+  let { data: marketData, refetch } = useQuery(GET_MARKETPLACE, {
+    variables: {
+      endpoint: 'market',
+      chainId: chainId,
+    },
+    fetchPolicy: 'network-only',
+    onCompleted: (data) => {
+      setData(data?.items?.entries)
+    },
+  })
+
+  useSubscription(
+    gql`
+      subscription Notifications($chainId: ID!) {
+        notifications(chainId: $chainId)
+      }
+    `,
     {
       variables: {
-        endpoint: 'market',
         chainId: chainId,
       },
+      onData: () => refetch(),
     }
   )
-
-  console.log(marketData?.items?.entries)
-  if (!called) {
-    setTimeout(() => {
-      getMarketQuery()
-    }, 1000)
-
-    console.log('maretdat', marketData)
-  }
-  React.useEffect(() => {
-    setData(marketData?.items?.entries)
-  }, [marketData])
-
   return (
     <div className="flex text-white min-h-screen p-24">
       <div className="w-full flex flex-col">
