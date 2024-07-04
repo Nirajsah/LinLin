@@ -5,7 +5,7 @@ export default function About() {
         <div className="flex flex-col items-center gap-2 justify-center">
           <div className="text-4xl text-white">Auction Your Items Here</div>
           <div className="text-lg font-sans max-w-[800px] text-[#fff] text-center text-opacity-60">
-            Built on the foundation of Linear, the pioneering Layer-1 protocol
+            Built on the foundation of Linera, the pioneering Layer-1 protocol
             that revolutionizes Web3 scalability with the innovative
             introduction of microchains, enabling unparalleled horizontal
             scaling capabilities.
