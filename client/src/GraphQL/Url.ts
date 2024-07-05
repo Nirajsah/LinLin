@@ -23,7 +23,6 @@ export const createApolloClient = () => {
       const endpoint = operation.variables.endpoint
       const chainId = operation.variables.chainId ?? chain_id
       const portk = operation.variables.port ?? port
-      console.log(operation.variables, operation)
       switch (endpoint) {
         case 'lincoin':
           return `http://localhost:${port}/chains/${chainId}/applications/${APP.lincoin_id}`

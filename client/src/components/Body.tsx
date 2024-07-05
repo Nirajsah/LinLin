@@ -2,8 +2,8 @@ import React from 'react'
 import ActiveAuctionCard from './ActiveAuctionCard'
 import UpComingAuctionCard from './UpComingAuctionCard'
 import PastAuction from './PastAuctions'
-import { useLazyQuery, useMutation } from '@apollo/client'
-import { GET_AUCTION, UPDATE_STATUS } from '../GraphQL/queries'
+import { useLazyQuery, useMutation, useSubscription } from '@apollo/client'
+import { GET_AUCTION, NOTIFICATIONS, UPDATE_STATUS } from '../GraphQL/queries'
 import Auction from './Auction'
 import Modal from './Modal'
 import { mainChainId } from '../constants/const'
@@ -51,19 +51,19 @@ export default function Body() {
 
   let [updateQuery] = useMutation(UPDATE_STATUS)
 
-  let [auctionQuery, { data: auctionData, called: auctionCalled }] =
-    useLazyQuery(GET_AUCTION, {
-      variables: {
-        chainId: chainId,
-        endpoint: 'auction',
-      },
-    })
+  let [auctionQuery, { data: auctionData }] = useLazyQuery(GET_AUCTION, {
+    variables: {
+      chainId: chainId,
+      endpoint: 'auction',
+    },
+  })
 
-  React.useEffect(() => {
-    if (!auctionCalled) {
-      auctionQuery()
-    }
-  }, [auctionCalled, auctionQuery])
+  useSubscription(NOTIFICATIONS, {
+    variables: {
+      chainId: chainId,
+    },
+    onData: () => auctionQuery(),
+  })
 
   React.useEffect(() => {
     const currentTime = Date.now()
@@ -110,8 +110,6 @@ export default function Body() {
         endAuction()
       }, 1000)
 
-      auctionQuery()
-
       return () => clearInterval(interval)
     }
   }, [activeAuctions, upComingAuctions])
@@ -119,23 +117,26 @@ export default function Body() {
   React.useEffect(() => {
     if (auctionData && auctionData?.auctions.entries) {
       const auctions = auctionData.auctions.entries
-      const activeAuctionsData: AuctionType[] = []
-      const upComingAuctionsData: AuctionType[] = []
-      const pastAuctionsData: AuctionType[] = []
+      // const activeAuctionsData: AuctionType[] = []
+      // const upComingAuctionsData: AuctionType[] = []
+      // const pastAuctionsData: AuctionType[] = []
 
       auctions.forEach((auction: any) => {
         if (auction.value.status === 'Ongoing') {
-          activeAuctionsData.push(auction.value)
+          setActiveAuctions([...activeAuctions, auction.value])
+          // activeAuctionsData.push(auction.value)
         } else if (auction.value.status === 'Created') {
-          upComingAuctionsData.push(auction.value)
+          setUpComingAuctions([...upComingAuctions, auction.value])
+          // upComingAuctionsData.push(auction.value)
         } else if (auction.value.status === 'Ended') {
-          pastAuctionsData.push(auction.value)
+          setPastAuctions([...pastAuctions, auction.value])
+          // pastAuctionsData.push(auction.value)
         }
       })
 
-      setActiveAuctions(activeAuctionsData)
-      setUpComingAuctions(upComingAuctionsData)
-      setPastAuctions(pastAuctionsData)
+      // setActiveAuctions(activeAuctionsData)
+      // setUpComingAuctions(upComingAuctionsData)
+      // setPastAuctions(pastAuctionsData)
     }
   }, [auctionData])
 
