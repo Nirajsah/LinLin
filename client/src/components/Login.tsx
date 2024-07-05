@@ -1,15 +1,13 @@
 import { useMutation } from '@apollo/client'
-import { REQUEST_APPLICATION, USER_LOGIN } from '../GraphQL/queries'
+import { REQUEST_APPLICATION, SUBSCRIBE, USER_LOGIN } from '../GraphQL/queries'
 import { useUser } from '../context/UserProvider'
 import { APP, mainChainId } from '../constants/const'
 import React from 'react'
-import { gql } from 'graphql-tag'
 
 export default function Login({ close }: { close: any }) {
   const { user, setUser } = useUser()
   const chainId = window.sessionStorage.getItem('chainId') ?? ''
   const owner = window.sessionStorage.getItem('owner') ?? ''
-  const port = window.sessionStorage.getItem('port') ?? ''
   const [userPort, setPort] = React.useState('')
   let [loginQuery] = useMutation(USER_LOGIN, {
     variables: {
@@ -18,20 +16,14 @@ export default function Login({ close }: { close: any }) {
       endpoint: 'auction-main',
     },
   })
-  let [auctionSubscribeQuery] = useMutation(
-    gql`
-      mutation Subscribe {
-        subscribe
-      }
-    `,
-    {
-      variables: {
-        endpoint: 'auction',
-        chainId: chainId,
-        port: userPort,
-      },
-    }
-  )
+
+  let [auctionSubscribeQuery] = useMutation(SUBSCRIBE, {
+    variables: {
+      endpoint: 'auction',
+      chainId: chainId,
+      port: userPort,
+    },
+  })
   let [requestAppQuery] = useMutation(REQUEST_APPLICATION)
 
   async function handleLogin() {
@@ -48,9 +40,6 @@ export default function Login({ close }: { close: any }) {
       loginQuery()
       auctionSubscribeQuery()
     }, 2000)
-    setTimeout(() => {
-      window.location.reload()
-    }, 5000)
   }
 
   return (
