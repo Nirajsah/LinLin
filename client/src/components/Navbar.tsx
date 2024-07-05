@@ -5,8 +5,8 @@ import AuctionButton from './AuctionButton'
 import Modal from './Modal'
 import Login from './Login'
 import AuctionForm from './AuctionForm'
-import { GET_BALANCE } from '../GraphQL/queries'
-import { useLazyQuery } from '@apollo/client'
+import { GET_BALANCE, NOTIFICATIONS } from '../GraphQL/queries'
+import { useLazyQuery, useSubscription } from '@apollo/client'
 import { useUser } from '../context/UserProvider'
 import { Link } from 'react-router-dom'
 
@@ -16,21 +16,20 @@ export default function Navbar() {
   const owner = window.sessionStorage.getItem('owner') ?? ''
   const [open, setOpen] = React.useState(false)
   const [hostModal, setHostModal] = React.useState(false)
-  const [balanceQuery, { data: balanceData, called }] = useLazyQuery(
-    GET_BALANCE,
-    {
-      variables: {
-        owner: `User:${owner}`,
-        endpoint: 'lincoin',
-        chainId: chainId,
-      },
-    }
-  )
-  React.useEffect(() => {
-    if (!called) {
-      balanceQuery()
-    }
-  }, [user])
+  const [balanceQuery, { data: balanceData }] = useLazyQuery(GET_BALANCE, {
+    variables: {
+      owner: `User:${owner}`,
+      endpoint: 'lincoin',
+      chainId: chainId,
+    },
+  })
+
+  useSubscription(NOTIFICATIONS, {
+    variables: {
+      chainId: chainId,
+    },
+    onData: () => balanceQuery(),
+  })
 
   function handleClose() {
     setOpen(false)
