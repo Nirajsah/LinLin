@@ -9,6 +9,11 @@ export const GET_BALANCE = gql`
     }
   }
 `
+export const NOTIFICATIONS = gql`
+  subscription Notifications($chainId: ID!) {
+    notifications(chainId: $chainId)
+  }
+`
 export const USER_BID = gql`
   mutation Bid($auctionId: Int!, $amount: Int!, $bidder: Account!) {
     bid(auctionId: $auctionId, amount: $amount, bidder: $bidder)
@@ -33,7 +38,12 @@ export const NEW_ITEM = gql`
     $image: String!
     $type: String!
   ) {
-    newItem(name: $name, description: $description, image: $image, type: $type)
+    newItem(
+      name: $name
+      description: $description
+      image: $image
+      itemType: $type
+    )
   }
 `
 
@@ -94,68 +104,29 @@ export const UPDATE_STATUS = gql`
   }
 `
 
-export const NEW_AUCTION = gql`
-  mutation CreateAuction(
+export const CREATE_AUCTION = gql`
+  mutation NewAuction(
     $name: String!
     $description: String!
-    $item: [item!]
-    $startTime: Int!
-    $endTime: Int!
-    $startingBid: String!
+    $bidAmount: String!
+    $start: Int!
+    $end: Int!
+    $item: InputItem!
     $now: Int!
   ) {
     createAuction(
       name: $name
       description: $description
-      item: $Item
-      startTime: $startTime
-      endTime: $endTime
-      startingBid: $startingBid
-      now: $now
-    ) {
-      id
-      name
-      description
-      item {
-        id
-        name
-        description
-        image
-      }
-      startTime
-      endTime
-      startingBid
-    }
-  }
-`
-
-export const CREATE_AUCTION = gql`
-  mutation NewAuction(
-    $name: String!
-    $startingBid: String!
-    $startTime: Int!
-    $item: ItemType!
-    $endTime: Int!
-    $description: String!
-    $image: String!
-  ) {
-    createAuction(
-      name: $name
-      description: $description
       item: $item
-      startTime: $startTime
-      endTime: $endTime
-      image: $image
-      startingBid: $startingBid
+      startTime: $start
+      endTime: $end
+      startingBid: $bidAmount
+      now: $now
     )
   }
 `
-export const SUBSCRIBE_MARKET = gql`
-  mutation Subscribe {
-    subscribe
-  }
-`
-export const SUBSCRIBE_AUCTION = gql`
+
+export const SUBSCRIBE = gql`
   mutation Subscribe {
     subscribe
   }
