@@ -2,7 +2,7 @@ import React from 'react'
 import Modal from '../components/Modal'
 import { useMutation, useQuery, useSubscription } from '@apollo/client'
 import { gql } from 'graphql-tag'
-import { GET_MARKETPLACE } from '../GraphQL/queries'
+import { GET_MARKETPLACE, NEW_ITEM } from '../GraphQL/queries'
 import { useUser } from '../context/UserProvider'
 
 function Form({ handleFormClose }: { handleFormClose: () => void }) {
@@ -25,22 +25,7 @@ function Form({ handleFormClose }: { handleFormClose: () => void }) {
     }
   }
 
-  let [newItem] = useMutation(gql`
-    mutation NewItem(
-      $name: String!
-      $description: String!
-      $image: String!
-      $type: String!
-    ) {
-      newItem(
-        name: $name
-        description: $description
-        image: $image
-        itemType: $type
-      )
-    }
-  `)
-
+  let [newItem] = useMutation(NEW_ITEM)
   const handleQuery = async () => {
     try {
       const { data } = await newItem({
