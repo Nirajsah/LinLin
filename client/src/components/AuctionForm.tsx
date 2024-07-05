@@ -1,8 +1,7 @@
 import React from 'react'
 import { dateTimeToMilliseconds } from '../utils/time'
 import { useLazyQuery, useMutation } from '@apollo/client'
-import { gql } from 'graphql-tag'
-import { GET_USER_ITEMS } from '../GraphQL/queries'
+import { CREATE_AUCTION, GET_USER_ITEMS } from '../GraphQL/queries'
 import { useUser } from '../context/UserProvider'
 
 interface ItemType {
@@ -53,27 +52,7 @@ export default function AuctionForm({ close }: { close: any }) {
     endingTime: number
   } | null>(null)
 
-  let [newAuctoinQuery] = useMutation(gql`
-    mutation NewAuction(
-      $name: String!
-      $description: String!
-      $bidAmount: String!
-      $start: Int!
-      $end: Int!
-      $item: InputItem!
-      $now: Int!
-    ) {
-      createAuction(
-        name: $name
-        description: $description
-        item: $item
-        startTime: $start
-        endTime: $end
-        startingBid: $bidAmount
-        now: $now
-      )
-    }
-  `)
+  let [newAuctoinQuery] = useMutation(CREATE_AUCTION)
 
   let [collectionQuery, { data: collectionData, called }] = useLazyQuery(
     GET_USER_ITEMS,
@@ -126,7 +105,6 @@ export default function AuctionForm({ close }: { close: any }) {
   }, [selectedCollection, startingBid, date, time])
 
   async function auctionQuery() {
-    console.log('logging auciton state', auction)
     await newAuctoinQuery({
       variables: {
         endpoint: 'auction',
