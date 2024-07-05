@@ -1,11 +1,6 @@
 import React from 'react'
 import Modal from '../components/Modal'
-import {
-  useLazyQuery,
-  useMutation,
-  useQuery,
-  useSubscription,
-} from '@apollo/client'
+import { useMutation, useQuery, useSubscription } from '@apollo/client'
 import { gql } from 'graphql-tag'
 import { GET_MARKETPLACE } from '../GraphQL/queries'
 import { useUser } from '../context/UserProvider'
@@ -194,7 +189,7 @@ export default function MarketPlace() {
   function handleFormClose() {
     setShowForm(false)
   }
-  let { data: marketData, refetch } = useQuery(GET_MARKETPLACE, {
+  let { refetch } = useQuery(GET_MARKETPLACE, {
     variables: {
       endpoint: 'market',
       chainId: chainId,
