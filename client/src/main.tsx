@@ -12,7 +12,7 @@ import { Toaster } from 'sonner'
 const client = createApolloClient()
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <ApolloProvider client={client}>
-    <div className="font-changa bg-[#1a1c1f] text-white">
+    <div className="font-changa min-h-screen bg-[#1a1c1f] text-white">
       <BrowserRouter>
         <UserProvider>
           <Toaster />
