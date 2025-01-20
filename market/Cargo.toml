@@ -4,16 +4,17 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+anyhow = "1.0.86"
 async-graphql = { version = "=7.0.2", default-features = false }
 async-graphql-derive = { version = "=7.0.2", default-features = false }
 bcs = "0.1.6"
-linera-sdk = "0.11.3"
+linera-sdk = "0.13.1"
 log = "0.4.21"
 serde = "1.0.203"
-thiserror = "1.0.61"
+thiserror = "2.0.3"
 
 [dev-dependencies]
-linera-sdk = { version = "0.11.3", features = ["test"] }
+linera-sdk = { version = "0.13.1", features = ["test"] }
 log = "0.4.21"
 
 [[bin]]

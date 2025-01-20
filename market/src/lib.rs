@@ -1,9 +1,10 @@
-use async_graphql::{Request, Response};
+use async_graphql::{InputObject, Request, Response};
 use async_graphql_derive::SimpleObject;
 use linera_sdk::{
-    base::{Account, ArithmeticError, ContractAbi, Owner, ServiceAbi},
+    base::{AccountOwner, ArithmeticError, ContractAbi, ServiceAbi},
     graphql::GraphQLMutationRoot,
     views::ViewError,
+    DataBlobHash,
 };
 use serde::{Deserialize, Serialize};
 use std::convert::Infallible;
@@ -24,51 +25,40 @@ impl ServiceAbi for MarketAbi {
 #[derive(Debug, Deserialize, Serialize, Clone, GraphQLMutationRoot)]
 pub enum Operation {
     Subscribe,
-    NewItem {
-        name: String,
-        description: String,
-        image: String,
-        item_type: String,
-    },
-    GetItem {
-        owner: Account,
-    },
-    UpdateOwnerShip {
-        item_owner: Owner,
-        id: u32,
-        new_owner: Account,
-    },
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub enum Message {
-    Ok,
     Subscribe,
-    NewItem {
-        item: Item,
-    },
-    UpdateOwnerShip {
-        item_owner: Owner,
-        id: u32,
-        new_owner: Account,
-    },
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, SimpleObject)]
-pub struct Item {
-    pub id: u32,
+#[derive(
+    Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Ord, PartialOrd, SimpleObject, InputObject,
+)]
+pub struct TokenId {
+    pub id: Vec<u8> 
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, SimpleObject, InputObject)]
+pub struct Nft {
+    pub token_id: TokenId,
+    pub minter: AccountOwner,
+    pub owner: AccountOwner,
+    pub meta_data: NftData,
+    pub blob_hash: DataBlobHash,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, SimpleObject, InputObject)]
+pub struct NftData {
     pub name: String,
     pub description: String,
-    pub image: String,
-    pub item_type: String,
-    pub owner: Account,
+    pub image_url: String,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default)]
 pub enum MarketResponse {
     #[default]
     Ok,
-    Item(Vec<Item>),
     ItemAdded,
 }
 
