@@ -1,0 +1,14 @@
+{
+  "name": "linlin-frontend",
+  "version": "1.0.0",
+  "description": "LinLin Frontend - A Dioxus and Tailwind CSS project",
+  "scripts": {
+    "tailwind": "tailwindcss -i ./input.css -o ./assets/tailwind.css --watch",
+    "dx": "dx serve",
+    "dev": "npm run tailwind & dx serve",
+    "build": "tailwindcss -i ./input.css -o ./assets/tailwind.css --minify && dx build"
+  },
+  "devDependencies": {
+    "tailwindcss": "^4.1.11"
+  }
+}
